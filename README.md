@@ -1,152 +1,107 @@
-# Smart-Voice-Assistant-using-Raspberry-Pi
+# Voice Assistant Web Interface
 
-A **Flask-based backend server** with **Socket.IO** integration for building a Voice Assistant Web Interface.  
-This app provides a simple way to run your assistant logic (`beta.py`), view its terminal output in **real time**, and manage **recording files** through a web interface.
+A comprehensive web-based interface for managing and monitoring voice assistant recordings with real-time terminal streaming capabilities.
 
----
+## 🌟 Features
 
-## 🚀 Features
-- 🔗 **Flask web server** with HTML templates.
-- ⚡ **Real-time terminal streaming** from `beta.py` using WebSockets.
-- 📂 **Recordings API** to list and view transcripts (`recording_*.txt`).
-- 🛠️ Organized project structure for easy scaling.
-- 🐳 **Docker support** for simple deployment across platforms.
+- **Real-time Terminal Streaming**: Monitor your voice assistant (`beta.py`) output in real-time through WebSocket connections
+- **Recording Management**: Browse, view, and manage voice recording files with a clean web interface
+- **File Browser**: Easy access to all recording files with metadata (size, modification time)
+- **Live Terminal Control**: Start/stop terminal streaming with interactive controls
+- **Responsive Design**: Modern web interface that works across devices
+- **RESTful API**: Clean API endpoints for programmatic access to recordings and system status
 
----
+## 🏗️ Architecture
 
-## 📂 Project Structure
+The project consists of:
+- **Flask Backend**: Serves the web interface and provides API endpoints
+- **Socket.IO Integration**: Real-time bidirectional communication for terminal streaming
+- **File Management System**: Secure access to recording files
+- **Terminal Streamer**: Manages subprocess execution and output streaming
 
-├── app.py                 # Flask + Socket.IO backend
-├── beta.py                # Voice assistant backend script
-├── templates/             # HTML templates
-├── static/                # Static files (CSS/JS)
-├── requirements.txt       # Python dependencies
-└── README.md              # Project documentation
+## 📋 Prerequisites
 
----
+- Python 3.7 or higher
+- Flask and Flask-SocketIO
+- A `beta.py` script in the same directory (your voice assistant main script)
 
-## 🔧 Installation
+## 🚀 Installation
 
-### 1️⃣ Clone the Repository
+### 1. Clone the Repository
+
 ```bash
-git clone https://github.com/YOUR_USERNAME/voice-assistant-web.git
-cd voice-assistant-web
+git clone https://github.com/ichirakuramen69/Smart-Voice-Assistant-using-Raspberry-Pi.git
+cd Smart-Voice-Assistant-using-Raspberry-Pi
+```
 
-2️⃣ Create a Virtual Environment
+### 2. Create Virtual Environment (Recommended)
 
+```bash
+# Create virtual environment
 python3 -m venv venv
-source venv/bin/activate    # macOS/Linux
-venv\Scripts\activate       # Windows (PowerShell)
 
-3️⃣ Install Dependencies
-
-pip install -r requirements.txt
-
-
-⸻
-
-▶️ Running the Server
-
-Run the backend locally:
-
-python app.py
-
-Expected output:
-
-🌐 Starting Voice Assistant Web Interface
-📁 Project Directory: /path/to/voice-assistant-web
-🔗 Access at: http://localhost:5000
-
-Then open http://localhost:5000 in your browser.
-
-⸻
-
-🐳 Docker Setup
-
-You can also run this app in Docker, making it easy to share with your teammate or deploy anywhere.
-
-Build the Docker Image
-
-docker build -t voice-assistant:latest .
-
-Run the Container
-
-docker run -it --rm -p 5000:5000 voice-assistant:latest
-
-Access at http://localhost:5000.
-
-⸻
-
-📡 API Endpoints
-
-Endpoint	Method	Description
-/api/recordings	GET	List all recordings with metadata
-/api/recording/<filename>	GET	Fetch content of a specific recording
-
-Example:
-
-curl http://localhost:5000/api/recordings
-
-
-⸻
-
-⚡ WebSocket Events
-
-Event	Direction	Description
-start_terminal	Client → Server	Start streaming beta.py terminal output
-stop_terminal	Client → Server	Stop streaming terminal output
-terminal_output	Server → Client	Emitted when a new line of terminal output is available
-terminal_status	Server → Client	Status updates (connected/disconnected)
-terminal_error	Server → Client	Error messages from backend
-
-
-⸻
-
-🧩 Requirements
-	•	Python 3.8+
-	•	Flask 3.x
-	•	Flask-SocketIO
-	•	Eventlet
-	•	(See requirements.txt for the full list.)
-
-⸻
-
-🖥️ Cross-Platform Notes
-	•	macOS/Linux: Use the commands above.
-	•	Windows: Activate virtual environment via:
-
+# On Linux/Mac:
+source venv/bin/activate
+# On Windows:
 venv\Scripts\activate
+```
 
-and run the same commands.
+### 3. Install Dependencies
 
-⸻
+```bash
+pip install -r requirements.txt
+```
 
-🤝 Contributing
-	1.	Fork this repository.
-	2.	Create your feature branch:
+### 4. Ensure Your Voice Assistant Script
 
-git checkout -b feature/my-feature
+Make sure you have a `app.py` file in the same directory as the main Flask application. This should be your voice assistant main script.
 
+## 🎯 Usage
 
-	3.	Commit your changes:
+### Starting the Server
 
-git commit -m 'Add new feature'
+```bash
+python3 app.py
+```
 
+The server will start on `http://localhost:5000` and display:
+- Project directory information
+- Recordings directory path
+- Access URL
 
-	4.	Push to your branch:
+### Accessing the Interface
 
-git push origin feature/my-feature
+Open your web browser and navigate to:
+- **Main Interface**: `http://localhost:5000`
+- **About Page**: `http://localhost:5000/about`
+- **Recordings Manager**: `http://localhost:5000/recordings`
+- **Terminal Monitor**: `http://localhost:5000/terminal`
 
+## 📁 Directory Structure
 
-	5.	Open a Pull Request.
+```
+voice-assistant-web-interface/
+├── app.py                
+├── beta.py              
+├── requirements.txt       
+├── templates/           
+│   ├── index.html
+│   ├── about.html
+│   ├── recordings.html
+│   └── terminal.html
+└── README.md
+```
 
-⸻
+## 🤝 Contributing
 
-📜 License
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add some amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
 
-This project is licensed under the MIT License. See LICENSE for details.
+## 🎉 Acknowledgments
 
----
-
-✅ You can copy this whole thing into your `README.md`.  
-Would you also like me to **write a Dockerfile** that installs everything from `requirements.txt` so your teammate can just `docker pull` and run?
+- Built with Flask and Socket.IO
+- Inspired by modern web development practices
+- Designed for voice assistant integration and monitoring
