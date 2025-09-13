@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>About - Voice Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d10c39 0%, #f9627d 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .navbar .logo i {
+            margin-right: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section h2 {
+            color: #333;
+            margin-bottom: 1rem;
+            font-size: 1.8rem;
+            border-bottom: 2px solid #667eea;
+            padding-bottom: 0.5rem;
+        }
+
+        .section p {
+            line-height: 1.8;
+            color: #666;
+            margin-bottom: 1rem;
+        }
+
+        .features {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin: 2rem 0;
+        }
+
+        .feature {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 10px;
+            border-left: 4px solid #667eea;
+        }
+
+        .feature h3 {
+            color: #333;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .feature h3 i {
+            margin-right: 0.5rem;
+            color: #667eea;
+        }
+
+        .tech-stack {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin: 1rem 0;
+        }
+
+        .tech-item {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .architecture {
+            background: #f8f9fa;
+            padding: 2rem;
+            border-radius: 10px;
+            margin: 2rem 0;
+        }
+
+        .flow-step {
+            display: flex;
+            align-items: center;
+            margin: 1rem 0;
+            padding: 1rem;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+
+        .flow-step .step-number {
+            background: #667eea;
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 1rem;
+        }
+
+        .back-btn {
+            display: inline-block;
+            margin-top: 2rem;
+            padding: 0.8rem 2rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            text-decoration: none;
+            border-radius: 25px;
+            transition: transform 0.3s ease;
+        }
+
+        .back-btn:hover {
+            transform: translateY(-2px);
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <i class="fas fa-microphone"></i>
+            Voice Assistant
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/recordings">Recordings</a>
+            <a href="/terminal">Terminal</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Project Overview</h1>
+            <p>Raspberry Pi Voice Assistant with Smart Home Controls</p>
+        </div>
+
+        <div class="content">
+            <div class="section">
+                <h2><i class="fas fa-robot"></i> About the Project</h2>
+                <p>This voice assistant is a comprehensive IoT solution built on Raspberry Pi, featuring advanced speech recognition, natural language processing, and hardware control capabilities. The system responds to voice commands to control LEDs, servo motors, and can engage in intelligent conversations using Google's Gemini AI.</p>
+                <p>The project demonstrates the integration of multiple technologies including offline speech recognition, text-to-speech synthesis, hardware control through GPIO, and cloud-based AI services.</p>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-cogs"></i> Key Features</h2>
+                <div class="features">
+                    <div class="feature">
+                        <h3><i class="fas fa-microphone-alt"></i> Wake Word Detection</h3>
+                        <p>Responds to "assistant" wake word using Vosk speech recognition</p>
+                    </div>
+                    <div class="feature">
+                        <h3><i class="fas fa-lightbulb"></i> LED Control</h3>
+                        <p>Turn on/off lights and create blinking patterns via voice commands</p>
+                    </div>
+                    <div class="feature">
+                        <h3><i class="fas fa-fan"></i> Servo Control</h3>
+                        <p>Control fan speed with voice commands and PWM control</p>
+                    </div>
+                    <div class="feature">
+                        <h3><i class="fas fa-brain"></i> AI Integration</h3>
+                        <p>Powered by Google Gemini for intelligent conversation responses</p>
+                    </div>
+                    <div class="feature">
+                        <h3><i class="fas fa-record-vinyl"></i> Voice Recording</h3>
+                        <p>Record and save voice interactions with timestamp logging</p>
+                    </div>
+                    <div class="feature">
+                        <h3><i class="fas fa-volume-up"></i> Text-to-Speech</h3>
+                        <p>Natural voice responses using Rhasspy TTS engine</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-layer-group"></i> Technology Stack</h2>
+                <div class="tech-stack">
+                    <span class="tech-item">Python 3</span>
+                    <span class="tech-item">Raspberry Pi 4</span>
+                    <span class="tech-item">Vosk Speech Recognition</span>
+                    <span class="tech-item">Google Gemini AI</span>
+                    <span class="tech-item">Rhasspy TTS</span>
+                    <span class="tech-item">Flask Web Framework</span>
+                    <span class="tech-item">Socket.IO</span>
+                    <span class="tech-item">GPIO Zero</span>
+                    <span class="tech-item">SoundDevice</span>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-project-diagram"></i> System Architecture</h2>
+                <div class="architecture">
+                    <div class="flow-step">
+                        <div class="step-number">1</div>
+                        <div>
+                            <strong>Audio Capture:</strong> Continuous audio stream capture using SoundDevice with 48kHz sampling rate
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number">2</div>
+                        <div>
+                            <strong>Wake Word Detection:</strong> Vosk processes audio stream to detect "assistant" wake word
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number">3</div>
+                        <div>
+                            <strong>Command Processing:</strong> Rhasspy NLU analyzes voice commands and extracts intents
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number">4</div>
+                        <div>
+                            <strong>Action Execution:</strong> System executes hardware controls or queries Gemini AI
+                        </div>
+                    </div>
+                    <div class="flow-step">
+                        <div class="step-number">5</div>
+                        <div>
+                            <strong>Response Generation:</strong> TTS engine provides audio feedback to user
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-microchip"></i> Hardware Components</h2>
+                <p><strong>Raspberry Pi 4:</strong> Main processing unit running the voice assistant software</p>
+                <p><strong>LEDs:</strong> Connected to GPIO pins 17 and 26 for visual feedback and lighting control</p>
+                <p><strong>Servo Motor:</strong> Connected to GPIO pin 18 with PWM control for fan speed management</p>
+                <p><strong>USB Microphone:</strong> High-quality audio input for voice command capture</p>
+                <p><strong>Speaker/Audio Output:</strong> For TTS voice responses and system feedback</p>
+            </div>
+
+            <div class="section">
+                <h2><i class="fas fa-code"></i> Voice Commands</h2>
+                <p>The system recognizes various voice commands including:</p>
+                <ul style="margin-left: 2rem; color: #666;">
+                    <li>"Turn on/off light" - Controls LED state</li>
+                    <li>"Blink light" - Creates blinking LED pattern</li>
+                    <li>"Turn on/off fan" - Controls servo motor</li>
+                    <li>"Increase/decrease speed" - Adjusts fan speed</li>
+                    <li>"Enable/disable recording mode" - Controls voice logging</li>
+                    <li>General conversation - Handled by Gemini AI</li>
+                </ul>
+            </div>
+
+            <a href="/" class="back-btn">
+                <i class="fas fa-arrow-left"></i> Back to Home
+            </a>
+        </div>
+    </div>
+</body>
+</html>

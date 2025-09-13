@@ -1,0 +1,554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Terminal - Voice Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.7.2/socket.io.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d10c39 0%, #f9627d 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .navbar .logo i {
+            margin-right: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .connection-status {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .status-indicator {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #dc3545;
+            animation: pulse 2s infinite;
+        }
+
+        .status-indicator.connected {
+            background: #28a745;
+        }
+
+        .status-indicator.connecting {
+            background: #ffc107;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .control-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.8rem 1.5rem;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-weight: 500;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #dc3545, #e74c3c);
+            color: white;
+        }
+
+        .btn-secondary {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+        }
+
+        .btn:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .terminal-container {
+            background: #1e1e1e;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            height: 600px;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .terminal-header {
+            background: #2d2d2d;
+            padding: 1rem 1.5rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #444;
+        }
+
+        .terminal-title {
+            color: #fff;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .window-control {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+        }
+
+        .close { background: #ff5f57; }
+        .minimize { background: #ffbd2e; }
+        .maximize { background: #28ca42; }
+
+        .terminal-output {
+            flex: 1;
+            padding: 1rem;
+            overflow-y: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            background: #1e1e1e;
+        }
+
+        .terminal-line {
+            display: flex;
+            margin-bottom: 0.5rem;
+            word-wrap: break-word;
+        }
+
+        .timestamp {
+            color: #6c757d;
+            margin-right: 1rem;
+            flex-shrink: 0;
+            min-width: 80px;
+        }
+
+        .output-text {
+            color: #e6e6e6;
+            flex: 1;
+        }
+
+        .system-message {
+            color: #17a2b8;
+            font-style: italic;
+        }
+
+        .error-message {
+            color: #dc3545;
+        }
+
+        .success-message {
+            color: #28a745;
+        }
+
+        .warning-message {
+            color: #ffc107;
+        }
+
+        .prompt {
+            color: #28a745;
+            font-weight: bold;
+        }
+
+        .terminal-footer {
+            background: #2d2d2d;
+            padding: 0.5rem 1rem;
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            border-top: 1px solid #444;
+            font-size: 0.85rem;
+            color: #6c757d;
+        }
+
+        .empty-terminal {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #6c757d;
+        }
+
+        .empty-terminal i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 2rem;
+            margin-left: auto;
+        }
+
+        .scrollbar-style {
+            scrollbar-width: thin;
+            scrollbar-color: #444 #1e1e1e;
+        }
+
+        .scrollbar-style::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .scrollbar-style::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+
+        .scrollbar-style::-webkit-scrollbar-thumb {
+            background: #444;
+            border-radius: 4px;
+        }
+
+        .scrollbar-style::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .connection-status {
+                order: 2;
+            }
+
+            .control-buttons {
+                order: 1;
+                justify-content: center;
+            }
+
+            .terminal-container {
+                height: 500px;
+            }
+
+            .stats-bar {
+                margin-left: 0;
+                margin-top: 0.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <i class="fas fa-microphone"></i>
+            Voice Assistant
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/recordings">Recordings</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Live Terminal</h1>
+            <p>Real-time monitoring of voice assistant system</p>
+        </div>
+
+        <div class="controls">
+            <div class="connection-status">
+                <div class="status-indicator" id="status-indicator"></div>
+                <span id="connection-status">Disconnected</span>
+            </div>
+            
+            <div class="control-buttons">
+                <button class="btn btn-primary" id="start-btn" onclick="startTerminal()">
+                    <i class="fas fa-play"></i> Start
+                </button>
+                <button class="btn btn-danger" id="stop-btn" onclick="stopTerminal()" disabled>
+                    <i class="fas fa-stop"></i> Stop
+                </button>
+                <button class="btn btn-secondary" onclick="clearTerminal()">
+                    <i class="fas fa-trash"></i> Clear
+                </button>
+            </div>
+        </div>
+
+        <div class="terminal-container">
+            <div class="terminal-header">
+                <div class="terminal-title">
+                    <i class="fas fa-terminal"></i>
+                    beta.py - Voice Assistant Terminal
+                </div>
+                <div class="window-controls">
+                    <div class="window-control close"></div>
+                    <div class="window-control minimize"></div>
+                    <div class="window-control maximize"></div>
+                </div>
+            </div>
+            
+            <div class="terminal-output scrollbar-style" id="terminal-output">
+                <div class="empty-terminal">
+                    <i class="fas fa-terminal"></i>
+                    <h3>Terminal Ready</h3>
+                    <p>Click "Start" to begin streaming beta.py output</p>
+                </div>
+            </div>
+            
+            <div class="terminal-footer">
+                <span>Voice Assistant Terminal v1.0</span>
+                <div class="stats-bar">
+                    <span>Lines: <span id="line-count">0</span></span>
+                    <span>Connected: <span id="connection-time">--</span></span>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const socket = io();
+        let lineCount = 0;
+        let connectionStartTime = null;
+        let connectionTimer = null;
+
+        // DOM elements
+        const statusIndicator = document.getElementById('status-indicator');
+        const connectionStatus = document.getElementById('connection-status');
+        const terminalOutput = document.getElementById('terminal-output');
+        const startBtn = document.getElementById('start-btn');
+        const stopBtn = document.getElementById('stop-btn');
+        const lineCountElement = document.getElementById('line-count');
+        const connectionTimeElement = document.getElementById('connection-time');
+
+        // Socket event handlers
+        socket.on('connect', function() {
+            updateConnectionStatus('ready', 'WebSocket Connected');
+        });
+
+        socket.on('disconnect', function() {
+            updateConnectionStatus('disconnected', 'WebSocket Disconnected');
+            stopConnectionTimer();
+            startBtn.disabled = false;
+            stopBtn.disabled = true;
+        });
+
+        socket.on('terminal_status', function(data) {
+            updateConnectionStatus(data.status, data.message);
+            if (data.status === 'connected') {
+                startConnectionTimer();
+                startBtn.disabled = true;
+                stopBtn.disabled = false;
+            } else if (data.status === 'disconnected') {
+                stopConnectionTimer();
+                startBtn.disabled = false;
+                stopBtn.disabled = true;
+            }
+        });
+
+        socket.on('terminal_output', function(data) {
+            addTerminalLine(data.timestamp, data.output, 'output-text');
+        });
+
+        socket.on('terminal_error', function(data) {
+            addTerminalLine(getCurrentTimestamp(), `Error: ${data.error}`, 'error-message');
+        });
+
+        // Functions
+        function updateConnectionStatus(status, message) {
+            statusIndicator.className = `status-indicator ${status}`;
+            connectionStatus.textContent = message;
+        }
+
+        function startTerminal() {
+            clearTerminalOutput();
+            addTerminalLine(getCurrentTimestamp(), 'Starting beta.py terminal stream...', 'system-message');
+            socket.emit('start_terminal');
+            startBtn.disabled = true;
+        }
+
+        function stopTerminal() {
+            addTerminalLine(getCurrentTimestamp(), 'Stopping terminal stream...', 'system-message');
+            socket.emit('stop_terminal');
+            stopBtn.disabled = true;
+        }
+
+        function clearTerminal() {
+            clearTerminalOutput();
+            lineCount = 0;
+            updateLineCount();
+        }
+
+        function clearTerminalOutput() {
+            terminalOutput.innerHTML = '';
+        }
+
+        function addTerminalLine(timestamp, text, className = 'output-text') {
+            // Remove empty terminal message if present
+            if (terminalOutput.querySelector('.empty-terminal')) {
+                terminalOutput.innerHTML = '';
+            }
+
+            const line = document.createElement('div');
+            line.className = 'terminal-line';
+            
+            const timestampSpan = document.createElement('span');
+            timestampSpan.className = 'timestamp';
+            timestampSpan.textContent = timestamp;
+            
+            const textSpan = document.createElement('span');
+            textSpan.className = className;
+            textSpan.textContent = text;
+            
+            line.appendChild(timestampSpan);
+            line.appendChild(textSpan);
+            terminalOutput.appendChild(line);
+            
+            // Auto-scroll to bottom
+            terminalOutput.scrollTop = terminalOutput.scrollHeight;
+            
+            // Update line count
+            lineCount++;
+            updateLineCount();
+        }
+
+        function getCurrentTimestamp() {
+            const now = new Date();
+            return now.toTimeString().split(' ')[0];
+        }
+
+        function updateLineCount() {
+            lineCountElement.textContent = lineCount;
+        }
+
+        function startConnectionTimer() {
+            connectionStartTime = Date.now();
+            connectionTimer = setInterval(updateConnectionTime, 1000);
+        }
+
+        function stopConnectionTimer() {
+            if (connectionTimer) {
+                clearInterval(connectionTimer);
+                connectionTimer = null;
+            }
+            connectionStartTime = null;
+            connectionTimeElement.textContent = '--';
+        }
+
+        function updateConnectionTime() {
+            if (connectionStartTime) {
+                const elapsed = Math.floor((Date.now() - connectionStartTime) / 1000);
+                const minutes = Math.floor(elapsed / 60);
+                const seconds = elapsed % 60;
+                connectionTimeElement.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            }
+        }
+
+        // Add some demo messages on load
+        document.addEventListener('DOMContentLoaded', function() {
+            // Show initial ready state
+            updateConnectionStatus('ready', 'Ready to connect');
+        });
+
+        // Handle page visibility changes
+        document.addEventListener('visibilitychange', function() {
+            if (document.hidden) {
+                // Page is hidden, you might want to pause updates
+            } else {
+                // Page is visible again
+            }
+        });
+    </script>
+</body>
+</html>

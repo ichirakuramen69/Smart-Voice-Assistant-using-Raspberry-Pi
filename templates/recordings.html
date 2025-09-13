@@ -1,0 +1,671 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Voice Recordings - Voice Assistant</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #d10c39 0%, #f9627d 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .navbar {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(10px);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+        }
+
+        .navbar .logo {
+            display: flex;
+            align-items: center;
+            color: white;
+            text-decoration: none;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .navbar .logo i {
+            margin-right: 0.5rem;
+            font-size: 2rem;
+        }
+
+        .nav-links a {
+            color: white;
+            text-decoration: none;
+            margin-left: 2rem;
+            opacity: 0.8;
+            transition: opacity 0.3s;
+        }
+
+        .nav-links a:hover {
+            opacity: 1;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        .header {
+            text-align: center;
+            color: white;
+            margin-bottom: 3rem;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .controls {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .search-box {
+            display: flex;
+            align-items: center;
+            flex: 1;
+            max-width: 400px;
+        }
+
+        .search-box input {
+            flex: 1;
+            padding: 0.8rem 1rem;
+            border: 2px solid #e1e5e9;
+            border-radius: 25px;
+            font-size: 1rem;
+            outline: none;
+            transition: border-color 0.3s;
+        }
+
+        .search-box input:focus {
+            border-color: #667eea;
+        }
+
+        .search-box i {
+            position: absolute;
+            right: 1rem;
+            color: #666;
+        }
+
+        .refresh-btn {
+            padding: 0.8rem 1.5rem;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            border-radius: 25px;
+            cursor: pointer;
+            transition: transform 0.3s;
+            margin-left: 1rem;
+        }
+
+        .refresh-btn:hover {
+            transform: translateY(-2px);
+        }
+
+        .stats {
+            display: flex;
+            gap: 2rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .recordings-container {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .recording-item {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 1.5rem;
+            margin-bottom: 1rem;
+            border-left: 4px solid #667eea;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .recording-item:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .recording-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .recording-title {
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .recording-title i {
+            margin-right: 0.5rem;
+            color: #667eea;
+        }
+
+        .recording-meta {
+            display: flex;
+            gap: 1rem;
+            color: #666;
+            font-size: 0.9rem;
+        }
+
+        .recording-actions {
+            display: flex;
+            gap: 0.5rem;
+            margin-top: 1rem;
+        }
+
+        .action-btn {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .download-btn {
+            background: #28a745;
+            color: white;
+        }
+
+        .download-btn:hover {
+            background: #218838;
+            transform: translateY(-1px);
+        }
+
+        .summary-btn {
+            background: #17a2b8;
+            color: white;
+        }
+
+        .summary-btn:hover {
+            background: #138496;
+            transform: translateY(-1px);
+        }
+
+        .summary-btn:disabled {
+            background: #6c757d;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .recording-preview {
+            margin-top: 1rem;
+            padding-top: 1rem;
+            border-top: 1px solid #e1e5e9;
+            color: #666;
+            font-style: italic;
+            display: none;
+        }
+
+        .recording-preview.expanded {
+            display: block;
+        }
+
+        .recording-content {
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            max-height: 300px;
+            overflow-y: auto;
+            border: 1px solid #e1e5e9;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            line-height: 1.6;
+        }
+
+        .summary-content {
+            background: #e7f3ff;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            border: 1px solid #bee5eb;
+            line-height: 1.6;
+        }
+
+        .summary-content h4 {
+            color: #0c5460;
+            margin-bottom: 0.5rem;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .loading i {
+            font-size: 3rem;
+            color: #667eea;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem;
+            color: #666;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            color: #ccc;
+            margin-bottom: 1rem;
+        }
+
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #dc3545;
+        }
+
+        .success {
+            background: #d4edda;
+            color: #155724;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1rem;
+            border-left: 4px solid #28a745;
+        }
+
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .search-box {
+                max-width: 100%;
+            }
+
+            .recording-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 0.5rem;
+            }
+
+            .recording-meta {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+
+            .recording-actions {
+                flex-direction: column;
+            }
+
+            .action-btn {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar">
+        <a href="/" class="logo">
+            <i class="fas fa-microphone"></i>
+            Voice Assistant
+        </a>
+        <div class="nav-links">
+            <a href="/">Home</a>
+            <a href="/about">About</a>
+            <a href="/terminal">Terminal</a>
+        </div>
+    </nav>
+
+    <div class="container">
+        <div class="header">
+            <h1>Voice Recordings</h1>
+            <p>Access and manage your voice interaction history</p>
+        </div>
+
+        <div class="controls">
+            <div class="search-box">
+                <input type="text" id="search-input" placeholder="Search recordings...">
+                <i class="fas fa-search"></i>
+            </div>
+            <button class="refresh-btn" onclick="loadRecordings()">
+                <i class="fas fa-sync-alt"></i> Refresh
+            </button>
+            <div class="stats">
+                <span id="total-count">0 recordings</span>
+                <span id="filtered-count"></span>
+            </div>
+        </div>
+
+        <div class="recordings-container">
+            <div id="loading" class="loading">
+                <i class="fas fa-spinner"></i>
+                <p>Loading recordings...</p>
+            </div>
+            <div id="recordings-list"></div>
+            <div id="error-message" style="display: none;"></div>
+        </div>
+    </div>
+
+    <script>
+        let allRecordings = [];
+        let filteredRecordings = [];
+        let recordingContents = {}; // Cache for recording contents
+
+        // Load recordings on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadRecordings();
+            
+            // Set up search functionality
+            document.getElementById('search-input').addEventListener('input', function() {
+                filterRecordings(this.value);
+            });
+        });
+
+        async function loadRecordings() {
+            const loading = document.getElementById('loading');
+            const recordingsList = document.getElementById('recordings-list');
+            const errorMessage = document.getElementById('error-message');
+            
+            loading.style.display = 'block';
+            recordingsList.innerHTML = '';
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/recordings');
+                const data = await response.json();
+
+                if (data.success) {
+                    allRecordings = data.recordings;
+                    filteredRecordings = [...allRecordings];
+                    displayRecordings();
+                    updateStats();
+                } else {
+                    throw new Error(data.error || 'Failed to load recordings');
+                }
+            } catch (error) {
+                console.error('Error loading recordings:', error);
+                errorMessage.innerHTML = `
+                    <div class="error">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Error loading recordings: ${error.message}
+                    </div>
+                `;
+                errorMessage.style.display = 'block';
+            } finally {
+                loading.style.display = 'none';
+            }
+        }
+
+        function displayRecordings() {
+            const recordingsList = document.getElementById('recordings-list');
+            
+            if (filteredRecordings.length === 0) {
+                recordingsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-microphone-slash"></i>
+                        <h3>No recordings found</h3>
+                        <p>No voice recordings match your search criteria.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            recordingsList.innerHTML = filteredRecordings.map(recording => `
+                <div class="recording-item">
+                    <div class="recording-header">
+                        <div class="recording-title" onclick="toggleRecording('${recording.filename}')">
+                            <i class="fas fa-file-audio"></i>
+                            ${recording.filename}
+                        </div>
+                        <div class="recording-meta">
+                            <span><i class="fas fa-calendar"></i> ${recording.modified}</span>
+                            <span><i class="fas fa-hdd"></i> ${formatFileSize(recording.size)}</span>
+                        </div>
+                    </div>
+                    <div class="recording-actions">
+                        <button class="action-btn download-btn" onclick="downloadRecording('${recording.filename}')">
+                            <i class="fas fa-download"></i>
+                            Download
+                        </button>
+                        <button class="action-btn summary-btn" onclick="generateSummary('${recording.filename}')" id="summary-btn-${recording.filename}">
+                            <i class="fas fa-magic"></i>
+                            Download Summary
+                        </button>
+                    </div>
+                    <div class="recording-preview" id="preview-${recording.filename}">
+                        <p>Click filename to load content...</p>
+                        <div class="recording-content" id="content-${recording.filename}" style="display: none;"></div>
+                        <div class="summary-content" id="summary-${recording.filename}" style="display: none;"></div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        async function toggleRecording(filename) {
+            const preview = document.getElementById(`preview-${filename}`);
+            const content = document.getElementById(`content-${filename}`);
+            
+            if (preview.classList.contains('expanded')) {
+                // Collapse
+                preview.classList.remove('expanded');
+                return;
+            }
+
+            // Expand
+            preview.classList.add('expanded');
+            
+            if (content.innerHTML === '') {
+                // Load content
+                await loadRecordingContent(filename);
+            }
+        }
+
+        async function loadRecordingContent(filename) {
+            const preview = document.getElementById(`preview-${filename}`);
+            const content = document.getElementById(`content-${filename}`);
+            
+            try {
+                preview.innerHTML = '<p><i class="fas fa-spinner fa-spin"></i> Loading content...</p>';
+                
+                const response = await fetch(`/api/recording/${filename}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    recordingContents[filename] = data.content || '';
+                    preview.innerHTML = `
+                        <p><strong>Lines:</strong> ${data.line_count} | <strong>Size:</strong> ${formatFileSize(data.content.length)} characters</p>
+                        <div class="recording-content">${data.content || 'No content available'}</div>
+                        <div class="summary-content" id="summary-${filename}" style="display: none;"></div>
+                    `;
+                } else {
+                    preview.innerHTML = `<p class="error">Error loading content: ${data.error}</p>`;
+                }
+            } catch (error) {
+                preview.innerHTML = `<p class="error">Error loading content: ${error.message}</p>`;
+            }
+        }
+
+        async function downloadRecording(filename) {
+            try {
+                // If content is already loaded, use cached version
+                if (recordingContents[filename]) {
+                    downloadTextFile(filename, recordingContents[filename]);
+                    return;
+                }
+
+                // Otherwise, fetch the content
+                const response = await fetch(`/api/recording/${filename}`);
+                const data = await response.json();
+
+                if (data.success) {
+                    recordingContents[filename] = data.content || '';
+                    downloadTextFile(filename, data.content || '');
+                } else {
+                    throw new Error(data.error || 'Failed to fetch recording content');
+                }
+            } catch (error) {
+                console.error('Error downloading recording:', error);
+                alert('Error downloading recording: ' + error.message);
+            }
+        }
+
+        function downloadTextFile(filename, content) {
+            const blob = new Blob([content], { type: 'text/plain' });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            document.body.removeChild(a);
+        }
+
+        async function generateSummary(filename) {
+            const summaryBtn = document.getElementById(`summary-btn-${filename}`);
+            const summaryDiv = document.getElementById(`summary-${filename}`);
+            
+            try {
+                // Disable button and show loading state
+                summaryBtn.disabled = true;
+                summaryBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+                
+                // Ensure content is loaded
+                if (!recordingContents[filename]) {
+                    const response = await fetch(`/api/recording/${filename}`);
+                    const data = await response.json();
+                    if (data.success) {
+                        recordingContents[filename] = data.content || '';
+                    } else {
+                        throw new Error(data.error || 'Failed to fetch recording content');
+                    }
+                }
+
+                // Generate summary using Gemini API
+                const summaryResponse = await fetch('/api/generate-summary', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                        filename: filename,
+                        content: recordingContents[filename]
+                    })
+                });
+
+                const summaryData = await summaryResponse.json();
+
+                if (summaryData.success) {
+                    // Display summary
+                    summaryDiv.innerHTML = `
+                        <h4><i class="fas fa-magic"></i> AI Generated Summary</h4>
+                        <p>${summaryData.summary}</p>
+                    `;
+                    summaryDiv.style.display = 'block';
+                    
+                    // Download summary as text file
+                    const summaryFilename = filename.replace('.txt', '_summary.txt');
+                    downloadTextFile(summaryFilename, summaryData.summary);
+                    
+                    // Show success message
+                    showNotification('Summary generated and downloaded successfully!', 'success');
+                } else {
+                    throw new Error(summaryData.error || 'Failed to generate summary');
+                }
+            } catch (error) {
+                console.error('Error generating summary:', error);
+                showNotification('Error generating summary: ' + error.message, 'error');
+            } finally {
+                // Re-enable button
+                summaryBtn.disabled = false;
+                summaryBtn.innerHTML = '<i class="fas fa-magic"></i> Download Summary';
+            }
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = type;
+            notification.innerHTML = `
+                <i class="fas fa-${type === 'success' ? 'check-circle' : 'exclamation-triangle'}"></i>
+                ${message}
+            `;
+            
+            const container = document.querySelector('.recordings-container');
+            container.insertBefore(notification, container.firstChild);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 5000);
+        }
+
+        function filterRecordings(searchTerm) {
+            const term = searchTerm.toLowerCase();
+            filteredRecordings = allRecordings.filter(recording => 
+                recording.filename.toLowerCase().includes(term) ||
+                recording.modified.toLowerCase().includes(term)
+            );
+            displayRecordings();
+            updateStats();
+        }
+
+        function updateStats() {
+            document.getElementById('total-count').textContent = `${allRecordings.length} recordings`;
+            const filteredCount = document.getElementById('filtered-count');
+            
+            if (filteredRecordings.length !== allRecordings.length) {
+                filteredCount.textContent = `(${filteredRecordings.length} shown)`;
+                filteredCount.style.display = 'inline';
+            } else {
+                filteredCount.style.display = 'none';
+            }
+        }
+
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 B';
+            const k = 1024;
+            const sizes = ['B', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+    </script>
+</body>
+</html>
