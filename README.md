@@ -1,10 +1,10 @@
-# Voice Assistant Web Interface
+# Voice Assistant with Web Interface
 
 A comprehensive web-based interface for managing and monitoring voice assistant recordings with real-time terminal streaming capabilities.
 
 ## 🌟 Features
 
-- **Real-time Terminal Streaming**: Monitor your voice assistant (`beta.py`) output in real-time through WebSocket connections
+- **Real-time Terminal Streaming**: Monitor your voice assistant output in real-time through WebSocket connections
 - **Recording Management**: Browse, view, and manage voice recording files with a clean web interface
 - **File Browser**: Easy access to all recording files with metadata (size, modification time)
 - **Live Terminal Control**: Start/stop terminal streaming with interactive controls
@@ -22,8 +22,6 @@ The project consists of:
 ## 📋 Prerequisites
 
 - Python 3.7 or higher
-- Flask and Flask-SocketIO
-- A `beta.py` script in the same directory (your voice assistant main script)
 
 ## 🚀 Installation
 
@@ -51,10 +49,6 @@ venv\Scripts\activate
 ```bash
 pip install -r requirements.txt
 ```
-
-### 4. Ensure Your Voice Assistant Script
-
-Make sure you have a `app.py` file in the same directory as the main Flask application. This should be your voice assistant main script.
 
 ## 🎯 Usage
 
